@@ -13,7 +13,10 @@ export default class Example extends React.Component {
             <div>
                 <p>Вы кликнули {this.state.count} раз(а)</p>
                 <button onClick={() => this.setState({ count: this.state.count + 1 })}>
-                    Нажми на меня
+                    увеличить
+                </button>
+                <button onClick={() => this.setState({ count: this.state.count - 1 })}>
+                    уменьшить
                 </button>
             </div>
         );

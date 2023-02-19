@@ -1,13 +1,125 @@
+@import "colors.css";
+
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  font-size: 0;
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
 }
+
+.widget {
+  display: flex;
+  flex-direction: column-reverse;
+  position: absolute;
+  padding: 20px 0 20px 0;
+}
+
+.widget__buttons {
+  position: relative;
+  opacity: 0;
+  align-self: center;
+  width: 50px;
+  height: 50px;
+  margin: 1px;
+  font-size: 18px;
+  color: var(--black-1);
+  border: 1px var(--black-1);
+  background: var(--red-4);
+  border-radius: 40%;
+  left: 50px;
+  transform: rotate(90deg);
+  transition: transform 0.5s linear, left 0.5s linear, opacity 0.5s linear, visibility 0.5s linear;
+}
+
+.calculator {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    background: var(--gray-2);
+    width: 320px;
+    position: absolute;
+    z-index: 1;
+}
+
+.display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: right;
+    width: 315px;
+}
+
+.display__history {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0 10px 0;
+    height: 17px;
+}
+
+
+.display__history_move-button {
+    visibility: hidden;
+    height: 17px;
+    width: 17px;
+    background: var(--black-2);
+    color: white;
+}
+
+.display__history_history-result {
+    align-self: center;
+    overflow: hidden;
+    height: 17px;
+    width: 256px;
+    margin: 0 10px 0 10px;
+    font-size: 22px;
+    font-weight: normal;
+    white-space: nowrap;
+    text-align: end;
+    color: var(--white-5);
+}
+
+.display__result {
+    margin: 10px;
+    font-size: 42px;
+    height: 42px;
+    font-weight: bold;
+    color: var(--white-3);
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.button__element {
+    width: 75px;
+    height: 50px;
+    margin: 1px;
+    font-size: 18px;
+    color: white;
+}
+
+.button__element_operation {
+    background: var(--black-2);
+}
+
+.button__element_number {
+    background: black;
+}
+
+.button__element_equal {
+    background: var(--orange-2);
+}
+
+
+
