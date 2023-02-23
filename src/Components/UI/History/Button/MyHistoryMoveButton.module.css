@@ -1,0 +1,9 @@
+.myHstMoveBtn {
+    cursor: pointer;
+    visibility: hidden;
+    border: 0;
+    height: 17px;
+    width: 17px;
+    background: #2C2C2C;
+    color: white;
+}

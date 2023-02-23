@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
-import Example from "./example";
+import './Styles/App.sass';
+import Calculator from "./Components/Calculator";
+import Widget from "./Components/UI/Widget/Widget";
+
+import React, {useState} from "react";
 
 function App() {
+  const [isOpen, setOpen] = useState(true);
+
   return (
     <div className="App">
       <header className="App-header">
-        <Example />
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {
+          isOpen ? <Calculator/> : null
+        }
+        <Widget onClick={() => {
+          setOpen(!isOpen);
+        }}
+        />
       </header>
     </div>
   );
