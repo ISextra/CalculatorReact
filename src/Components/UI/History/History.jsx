@@ -2,18 +2,35 @@ import React from 'react';
 import classes from "./History.module.sass";
 import MyHistoryMoveButton from "./Button/MyHistoryMoveButton";
 
-const History = ({children, ...props}) => {
-    return (
-        <div {...props} className={classes.myHst}>
-            <MyHistoryMoveButton>
-                {String.fromCharCode(60)}
-            </MyHistoryMoveButton>
-            <div className={classes.myHstRst}>{children}</div>
-            <MyHistoryMoveButton>
-                {String.fromCharCode(62)}
-            </MyHistoryMoveButton>
-        </div>
-    );
-};
+class History extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.firstArg = this.props.firstarg;
+        this.currentOperation = this.props.currentoperation;
+        this.secondArg = this.props.secondarg;
+
+
+        this.children = props.children;
+        this.props = props;
+    }
+
+    render() {
+        return (
+            <div {...this.props} className={classes.myHst}>
+                <MyHistoryMoveButton>
+                    {String.fromCharCode(60)}
+                </MyHistoryMoveButton>
+                <div className={classes.myHstRst}
+                >
+                    {this.children}
+                </div>
+                <MyHistoryMoveButton>
+                    {String.fromCharCode(62)}
+                </MyHistoryMoveButton>
+            </div>
+        );
+    }
+}
 
 export default History;

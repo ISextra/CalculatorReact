@@ -1,10 +1,17 @@
 import React from 'react';
 import classes from "./Button.module.sass";
 
-const Button = ({type, children, ...props}) => {
+class Button extends React.Component {
+    constructor({type, onClick, children, props}) {
+        super(props);
 
-    const myButtonBackground = () => {
-        switch (type) {
+        this.type = type;
+        this.onClick = onClick;
+        this.children = children;
+    }
+
+    myButtonBackground() {
+        switch (this.type) {
             case "complexOperation":
             case "basicOperation":
             case "cleanupOperation": {
@@ -21,13 +28,21 @@ const Button = ({type, children, ...props}) => {
             }
         }
     }
-    return (
-        <button {...props} className={classes.myBtn} style={{
-            background: myButtonBackground(),
-        }}>
-            {children}
-        </button>
-    );
-};
+
+    render() {
+        return  (
+            <button
+                {...this.props}
+                className={classes.myBtn}
+                onClick={this.onClick}
+                style={{
+                    background: this.myButtonBackground(),
+                }}
+            >
+                {this.children}
+            </button>
+           );
+    }
+}
 
 export default Button;

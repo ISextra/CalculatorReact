@@ -19,7 +19,6 @@ const DEFAULT_VALUES = {
     STYLE_OPACITY_VISIBLE: 1,
     STYLE_HIDDEN: "hidden",
     STYLE_VISIBLE: "visible",
-
 }
 const ELEMENTS_PROPERTY = {
     TAG_NAME_FOR_BUTTONS: "button",
