@@ -2,16 +2,13 @@ import React from 'react';
 import classes from "./Button.module.sass";
 
 class Button extends React.Component {
-    constructor({type, onClick, children, props}) {
+    constructor(props) {
         super(props);
-
-        this.type = type;
-        this.onClick = onClick;
-        this.children = children;
+        this.props = props;
     }
 
-    myButtonBackground() {
-        switch (this.type) {
+    myButtonBackground(type) {
+        switch (type) {
             case "complexOperation":
             case "basicOperation":
             case "cleanupOperation": {
@@ -30,16 +27,22 @@ class Button extends React.Component {
     }
 
     render() {
+        const {
+            type,
+            onClick,
+            children,
+        } = this.props
+
         return  (
             <button
                 {...this.props}
                 className={classes.myBtn}
-                onClick={this.onClick}
+                onClick={onClick}
                 style={{
-                    background: this.myButtonBackground(),
+                    background: this.myButtonBackground(type),
                 }}
             >
-                {this.children}
+                {children}
             </button>
            );
     }

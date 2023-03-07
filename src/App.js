@@ -9,8 +9,6 @@ class App extends React.Component {
         this.state = {
             isOpen: true,
         };
-
-
     }
 
     render() {
@@ -20,11 +18,12 @@ class App extends React.Component {
                     {
                         this.state.isOpen ? <Calculator/> : null
                     }
-                    <Widget onClick={() => {
-                        this.setState({
-                            isOpen: !this.state.isOpen
-                        });
-                    }}
+                    <Widget
+                        onClick={() => {
+                            this.setState({
+                                isOpen: !this.state.isOpen
+                            });
+                        }}
                     />
                 </header>
             </div>

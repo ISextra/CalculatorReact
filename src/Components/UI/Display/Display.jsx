@@ -1,5 +1,6 @@
 import React from 'react';
 import classes from "./Display.module.sass";
+import Calculator from "../../Calculator";
 
 class Display extends React.Component {
     constructor(props) {
@@ -8,9 +9,15 @@ class Display extends React.Component {
     }
 
     render() {
+        const {
+            secondArg,
+            result,
+            isNeedShowResult,
+        } = this.props
+
         return (
             <div {...this.props} className={classes.myDsp}>
-                {this.props.children}
+                {isNeedShowResult ? result : secondArg}
             </div>
         );
     }

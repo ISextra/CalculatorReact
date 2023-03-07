@@ -5,25 +5,46 @@ import MyHistoryMoveButton from "./Button/MyHistoryMoveButton";
 class History extends React.Component {
     constructor(props) {
         super(props);
-        this.props = props;
-        this.firstArg = this.props.firstarg;
-        this.currentOperation = this.props.currentoperation;
-        this.secondArg = this.props.secondarg;
 
-
-        this.children = props.children;
         this.props = props;
     }
 
+    getCorrectResult(firstArg, secondArg, currentOperation) {
+        let result = "";
+
+        if (firstArg !== null) {
+            result = `${firstArg}`;
+        }
+
+        if (secondArg !== null) {
+            result = `${result} ${secondArg}`;
+        }
+
+        if (currentOperation !== null) {
+            result = `${result} ${currentOperation}`;
+        }
+
+        return result;
+    }
+
     render() {
+        const {
+            firstarg,
+            secondarg,
+            currentoperation,
+        } = this.props;
         return (
-            <div {...this.props} className={classes.myHst}>
+            <div
+                {...this.props}
+                className={classes.myHst}
+            >
                 <MyHistoryMoveButton>
                     {String.fromCharCode(60)}
                 </MyHistoryMoveButton>
-                <div className={classes.myHstRst}
+                <div
+                    className={classes.myHstRst}
                 >
-                    {this.children}
+                    {this.getCorrectResult(firstarg, secondarg, currentoperation)}
                 </div>
                 <MyHistoryMoveButton>
                     {String.fromCharCode(62)}
