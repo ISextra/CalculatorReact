@@ -9,6 +9,7 @@ class Calculator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            displayFontSize: DEFAULT_VALUES.FONT_SIZE_LARGE,
             firstArg: null,
             secondArg: BUTTONS_CONTENT.ZERO,
             currentOperation: null,
@@ -225,6 +226,10 @@ class Calculator extends React.Component {
                 historyCurrentOperation: null,
             });
 
+            return;
+        }
+
+        if (this.state.secondArg.length > DEFAULT_VALUES.MAX_LINE_LENGTH) {
             return;
         }
 
@@ -1441,8 +1446,6 @@ class Calculator extends React.Component {
     }
 
     dragAndDropOnMouseMove(event) {
-        const target = event.target;
-
         let finalPositionX = event.pageX - this.state.shiftX;
         let finalPositionY = event.pageY - this.state.shiftY;
 
@@ -1556,6 +1559,14 @@ class Calculator extends React.Component {
         return result;
     }
 
+    getDisplayFontSize() {
+        if (this.state.secondArg.length > DEFAULT_VALUES.LENGTH_FOR_SWITCH_FONT_SIZE_MEDIUM) {
+            return DEFAULT_VALUES.FONT_SIZE_MEDIUM;
+        } else {
+            return DEFAULT_VALUES.FONT_SIZE_LARGE;
+        }
+    }
+
     render() {
         return (
             <div
@@ -1572,6 +1583,7 @@ class Calculator extends React.Component {
                     secondArg={this.state.secondArg}
                     result={this.state.result}
                     isNeedShowResult={this.state.isNeedShowResult ? 1 : 0}
+                    displayFontSize={this.getDisplayFontSize()}
                 />
                 {ELEMENTS.map((button, index) =>
                     <Button

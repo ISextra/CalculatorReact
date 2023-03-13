@@ -12,10 +12,14 @@ class Display extends React.Component {
             secondArg,
             result,
             isNeedShowResult,
+            displayFontSize
         } = this.props
 
         return (
-            <div className={classes.myDsp}>
+            <div
+                className={classes.myDsp}
+                style={{ fontSize: displayFontSize}}
+            >
                 {isNeedShowResult ? result : secondArg}
             </div>
         );
