@@ -71,7 +71,6 @@ class History extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.historyData !== prevProps.historyData) {
-            console.log("componentDidUpdate", prevProps, this.props);
 
             if (this.$historyRef.current.scrollWidth > this.$historyRef.current.clientWidth) {
                 this.$historyRef.current.scrollLeft += 1e9;

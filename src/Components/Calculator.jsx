@@ -19,6 +19,7 @@ class Calculator extends React.Component {
             isNeededCleanResult: false,
             isNeedShowResult: false,
             isSeveralOperationsUsed: false,
+            isDividedByZero: false,
             historyFirstArg: null,
             historySecondArg: null,
             historyCurrentOperation: null,
@@ -40,6 +41,7 @@ class Calculator extends React.Component {
 
 
         this.$calculator = React.createRef();
+        this.$display = React.createRef();
 
         this.onClickNumber = this.onClickNumber.bind(this);
         this.onClickBasicOperation = this.onClickBasicOperation.bind(this);
@@ -179,30 +181,52 @@ class Calculator extends React.Component {
 
     addition(param) {
         return `${Number(param) + Number(this.state.secondArg)}`;
-        //this.display.setResultToDisplay(this.state.result); //!!?
     }
 
     subtraction(param) {
         return `${Number(param) - Number(this.state.secondArg)}`;
-        //this.display.setResultToDisplay(this.state.result); //!!?
     }
 
     multiplication(param) {
         return `${Number(param) * Number(this.state.secondArg)}`;
-        //this.display.setResultToDisplay(this.state.result); //!!?
     }
 
     division(param) {
-        // if (this.processingDivideByZero()) {
-        //     return;
-        // }
+        if (Number(this.state.secondArg) === 0 || this.state.secondArg === DEFAULT_VALUES.DEFAULT_SECOND_NUMBER) {
+
+            this.setState({
+                isDividedByZero: true,
+            })
+
+            return DEFAULT_VALUES.DIVIDE_BY_ZERO_MASSAGE;
+        }
 
         return `${Number(param) / Number(this.state.secondArg)}`;
-        //this.display.setResultToDisplay(this.state.result); //!!?
     }
 
     onClickNumber(event) {
         const content = event.target.textContent;
+
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: `${content}`,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
 
         //если изначально стоит 0, начальное значение или "-"
         if ((this.state.secondArg === BUTTONS_CONTENT.ZERO) ||
@@ -214,7 +238,7 @@ class Calculator extends React.Component {
                     currentOperation: null,
                     secondArg: `${content}`,
                     isNeedShowResult: false,
-                })
+                });
 
                 return;
             }
@@ -231,8 +255,7 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isNeedShowResult: false,
                 });
-                // this.history.additionFirstArg();
-                // this.consoleInfo(`setNumber`);
+
                 return;
             }
 
@@ -240,7 +263,7 @@ class Calculator extends React.Component {
                 secondArg: `${content}`,
                 isNeedShowResult: false,
             });
-            // this.consoleInfo(`setNumber`);
+
             return;
         }
 
@@ -258,6 +281,7 @@ class Calculator extends React.Component {
                     isNeedShowResult: false,
                     isSeveralOperationsUsed: false,
                 });
+
                 return;
             }
 
@@ -304,8 +328,7 @@ class Calculator extends React.Component {
                 isEqualPressed: false,
                 isNeedShowResult: false,
             });
-            // this.history.additionFirstArg();
-            // this.consoleInfo(`setNumber`);
+
             return;
         }
 
@@ -319,7 +342,8 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: false,
                 isEqualPressed: false,
                 isNeedShowResult: false,
-            })
+            });
+
             return;
         }
 
@@ -330,24 +354,34 @@ class Calculator extends React.Component {
             isEqualPressed: false,
             isNeedShowResult: false,
         });
-        // this.consoleInfo(`setNumber`);
     }
 
     onClickBasicOperation(event) {
         const content = event.target.textContent;
 
-        // if (this.state.firstArg === null && this.state.secondArg === null) {//все значения не были заданы
-        //     this.updateState({
-        //         secondArg: `${DEFAULT_VALUES.ZERO}`,
-        //     });
-        // }
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
 
         //последовательный подсчет (без нажатия на =)
         if (!this.state.isOperationPressed && this.state.firstArg !== DEFAULT_VALUES.DEFAULT_FIRST_NUMBER) {
-            // if (this.processingDivideByZero()) {
-            //     return;
-            // }
-
             if (this.state.result !== DEFAULT_VALUES.DEFAULT_RESULT) {
                 if (this.state.isEqualPressed) {
                     if (this.state.isComplexOperationPressed) {
@@ -355,7 +389,6 @@ class Calculator extends React.Component {
                             historyCurrentOperation: content,
                             firstArg: this.state.result,
                             secondArg: this.state.result,
-                            result: this.execBasicOperation(this.state.result),
                             currentOperation: content,
                             isOperationPressed: true,
                             isComplexOperationPressed: false,
@@ -363,8 +396,8 @@ class Calculator extends React.Component {
                             isNeedShowResult: true,
                             isEqualPressed: false,
                             isSeveralOperationsUsed: true,
-                        })
-
+                            result: this.execBasicOperation(this.state.result),
+                        });
 
                         return;
                     }
@@ -374,7 +407,6 @@ class Calculator extends React.Component {
                             historySecondArg: this.state.secondArg,
                             firstArg: this.state.result,
                             secondArg: this.state.result,
-                            result: this.execBasicOperation(this.state.result),
                             currentOperation: content,
                             isOperationPressed: true,
                             isComplexOperationPressed: false,
@@ -382,14 +414,15 @@ class Calculator extends React.Component {
                             isNeedShowResult: true,
                             isEqualPressed: false,
                             isSeveralOperationsUsed: true,
-                        })
+                            result: this.execBasicOperation(this.state.result),
+                        });
+
                         return;
                     }
 
                     this.setState({
                         firstArg: this.state.result,
                         secondArg: this.state.result,
-                        result: this.execBasicOperation(this.state.result),
                         currentOperation: content,
                         isOperationPressed: true,
                         isComplexOperationPressed: false,
@@ -397,7 +430,9 @@ class Calculator extends React.Component {
                         isNeedShowResult: true,
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
+                        result: this.execBasicOperation(this.state.result),
                     });
+
                     return;
                 }
 
@@ -405,7 +440,6 @@ class Calculator extends React.Component {
                     this.setState({
                         historyCurrentOperation: content,
                         firstArg: this.state.result,
-                        result: this.execBasicOperation(this.state.result),
                         currentOperation: content,
                         historyFirstArg: `${this.state.historyFirstArg} ${this.state.historyCurrentOperation}`,
                         isOperationPressed: true,
@@ -414,7 +448,9 @@ class Calculator extends React.Component {
                         isNeedShowResult: true,
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
-                    })
+                        result: this.execBasicOperation(this.state.result),
+                    });
+
                     return;
                 }
                 if (!this.state.isComplexOperationPressed) {
@@ -423,7 +459,6 @@ class Calculator extends React.Component {
                         historyFirstArg: `${this.state.historyFirstArg} ${this.state.historyCurrentOperation}`,
                         historySecondArg: this.state.secondArg,
                         firstArg: this.state.result,
-                        result: this.execBasicOperation(this.state.result),
                         currentOperation: content,
                         isOperationPressed: true,
                         isComplexOperationPressed: false,
@@ -431,20 +466,23 @@ class Calculator extends React.Component {
                         isNeedShowResult: true,
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
-                    })
+                        result: this.execBasicOperation(this.state.result),
+                    });
+
                     return;
                 }
 
                 this.updateState({
                     firstArg: this.state.result,
-                    result: this.execBasicOperation(this.state.result),
                     currentOperation: content,
                     isOperationPressed: true,
                     isComplexOperationPressed: false,
                     isNeededCleanResult: true,
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
-                })
+                    result: this.execBasicOperation(this.state.result),
+                });
+
                 return;
             }
 
@@ -453,7 +491,6 @@ class Calculator extends React.Component {
                     this.setState({
                         historyCurrentOperation: content,
                         secondArg: this.state.result,
-                        result: this.execBasicOperation(this.state.result),
                         currentOperation: content,
                         isOperationPressed: true,
                         isComplexOperationPressed: false,
@@ -461,7 +498,9 @@ class Calculator extends React.Component {
                         isNeedShowResult: true,
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
-                    })
+                        result: this.execBasicOperation(this.state.result),
+                    });
+
                     return;
                 }
                 if (!this.state.isComplexOperationPressed) {
@@ -469,7 +508,6 @@ class Calculator extends React.Component {
                         historyCurrentOperation: content,
                         historySecondArg: this.state.secondArg,
                         secondArg: this.state.result,
-                        result: this.execBasicOperation(this.state.result),
                         currentOperation: content,
                         isOperationPressed: true,
                         isComplexOperationPressed: false,
@@ -477,12 +515,30 @@ class Calculator extends React.Component {
                         isNeedShowResult: true,
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
-                    })
+                        result: this.execBasicOperation(this.state.result),
+                    });
+
                     return;
                 }
 
                 this.setState({
                     secondArg: this.state.result,
+                    currentOperation: content,
+                    isOperationPressed: true,
+                    isComplexOperationPressed: false,
+                    isNeededCleanResult: true,
+                    isNeedShowResult: true,
+                    isEqualPressed: false,
+                    isSeveralOperationsUsed: true,
+                    result: this.execBasicOperation(this.state.result),
+                });
+
+                return;
+            }
+
+            if (this.state.isComplexOperationPressed) {
+                this.setState({
+                    historyCurrentOperation: content,
                     result: this.execBasicOperation(this.state.result),
                     currentOperation: content,
                     isOperationPressed: true,
@@ -492,43 +548,13 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
                 });
-                return;
-            }
 
-            if (this.state.isComplexOperationPressed) {
-                this.setState({
-                    historyCurrentOperation: content,
-                    result: this.execBasicOperation(this.state.result),
-                    currentOperation: content,
-                    //historyFirstArg: `${this.state.historyFirstArg} ${this.state.currentOperation}`,
-                    isOperationPressed: true,
-                    isComplexOperationPressed: false,
-                    isNeededCleanResult: true,
-                    isNeedShowResult: true,
-                    isEqualPressed: false,
-                    isSeveralOperationsUsed: true,
-                })
-                return;
-            }
-
-            if (!this.state.isComplexOperationPressed) {
-                this.setState({
-                    historyCurrentOperation: content,
-                    historySecondArg: this.state.secondArg,
-                    result: this.execBasicOperation(this.state.result),
-                    currentOperation: content,
-                    isOperationPressed: true,
-                    isComplexOperationPressed: false,
-                    isNeededCleanResult: true,
-                    isNeedShowResult: true,
-                    isEqualPressed: false,
-                    isSeveralOperationsUsed: true,
-                })
                 return;
             }
 
             this.setState({
-                result: this.execBasicOperation(this.state.result),
+                historyCurrentOperation: content,
+                historySecondArg: this.state.secondArg,
                 currentOperation: content,
                 isOperationPressed: true,
                 isComplexOperationPressed: false,
@@ -536,8 +562,9 @@ class Calculator extends React.Component {
                 isNeedShowResult: true,
                 isEqualPressed: false,
                 isSeveralOperationsUsed: true,
+                result: this.execBasicOperation(this.state.result),
             });
-            //this.consoleInfo(`equal`);
+
             return;
         }
 
@@ -584,13 +611,31 @@ class Calculator extends React.Component {
             isNeededCleanResult: true,
             isEqualPressed: false,
         });
-        //this.consoleInfo(`setOperation`);
     }
 
     onClickPoint() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: `${BUTTONS_CONTENT.ZERO}.`,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
         //если точка уже есть в числе
         if (this.state.secondArg?.includes(".")) {
-            //this.consoleInfo(`setPoint`);
             return;
         }
 
@@ -620,8 +665,6 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: false,
                     isEqualPressed: false,
                 });
-                //this.history.additionFirstArg();
-                //this.consoleInfo(`setPoint`);
 
                 return;
             }
@@ -629,7 +672,6 @@ class Calculator extends React.Component {
             this.setState({
                 secondArg: `${BUTTONS_CONTENT.ZERO}.`,
             });
-            //this.consoleInfo(`setNumber`);
 
             return;
         }
@@ -646,8 +688,6 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: false,
                 isEqualPressed: false,
             });
-            // this.history.additionFirstArg();
-            // this.consoleInfo(`setNumber`);
 
             return;
         }
@@ -690,10 +730,30 @@ class Calculator extends React.Component {
             historySecondArg: null,
             historyCurrentOperation: null,
         });
-        //this.consoleInfo("cleanAll");
     }
 
     onClickCleanLine() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
+
         if (this.state.isComplexOperationPressed) {
             if (!this.state.isSeveralOperationsUsed) {
                 this.setState({
@@ -706,7 +766,7 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: false,
                     isEqualPressed: false,
                     isNeedShowResult: false,
-                })
+                });
 
                 return
             }
@@ -720,7 +780,7 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: false,
                 isEqualPressed: false,
                 isNeedShowResult: false,
-            })
+            });
 
             return
         }
@@ -735,34 +795,74 @@ class Calculator extends React.Component {
             isComplexOperationPressed: false,
             isEqualPressed: false,
             isNeedShowResult: false,
-        })
+        });
     }
 
     onClickCleanLastSymbol() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
+
         if (this.state.isOperationPressed ||
             this.state.isComplexOperationPressed ||
             this.state.isEqualPressed ||
-            this.state.secondArg === BUTTONS_CONTENT.ZERO) {//!!?
-            //this.consoleInfo("cleanLastSymbol");
+            this.state.secondArg === BUTTONS_CONTENT.ZERO) {
 
             return;
         }
 
         if (this.state.secondArg?.slice(0, this.state.secondArg?.length - 1) === "") {
             this.setState({
-                secondArg: BUTTONS_CONTENT.ZERO, //!!?
-            })
+                secondArg: BUTTONS_CONTENT.ZERO,
+            });
 
             return;
         }
 
         this.setState({
             secondArg: this.state.secondArg?.slice(0, this.state.secondArg?.length - 1),
-        })
-        //this.consoleInfo("cleanLastSymbol");
+        });
     }
 
     onClickPercent() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
+
         if (!this.state.firstArg) {//для вычисления необходимы все переменные
             if (this.state.isComplexOperationPressed) {
                 this.setState({
@@ -809,6 +909,27 @@ class Calculator extends React.Component {
     }
 
     onClickReverse() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
+
         //для использования коппл. операции сразу после базовой операции
         if (this.state.isOperationPressed) {
             if (this.state.isEqualPressed) {
@@ -840,7 +961,7 @@ class Calculator extends React.Component {
                     isNeededCleanResult: true,
                 });
 
-                return
+                return;
             }
 
             this.setState({
@@ -881,7 +1002,7 @@ class Calculator extends React.Component {
                 isNeededCleanResult: true,
             });
 
-            return
+            return;
         }
 
         this.setState({
@@ -894,11 +1015,26 @@ class Calculator extends React.Component {
     }
 
     onClickSquare() {
-        // if (this.state.secondArg === DEFAULT_VALUES.DEFAULT_SECOND_NUMBER) {
-        //     this.updateState({
-        //         secondArg: BUTTONS_CONTENT.ZERO,
-        //     });
-        // } // !!?
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
 
 
         //для использования коппл. операции сразу после базовой операции
@@ -916,6 +1052,7 @@ class Calculator extends React.Component {
                     isNeedShowResult: false,
                     isEqualPressed: false,
                 });
+
                 return;
             }
 
@@ -929,9 +1066,9 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: true,
                     isNeededCleanResult: true,
                 });
+
                 return;
             }
-
 
             this.setState({
                 secondArg: `${Math.pow(Number(this.state.secondArg), 2)}`,
@@ -942,6 +1079,7 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: true,
                 isNeededCleanResult: true,
             });
+
             return;
         }
 
@@ -956,6 +1094,7 @@ class Calculator extends React.Component {
                 isNeedShowResult: false,
                 isEqualPressed: false,
             });
+
             return;
         }
 
@@ -969,6 +1108,7 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: true,
                     isNeededCleanResult: true,
                 });
+
                 return;
             }
 
@@ -979,6 +1119,7 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: true,
                 isNeededCleanResult: true,
             });
+
             return;
         }
 
@@ -993,11 +1134,26 @@ class Calculator extends React.Component {
     }
 
     onClickSquareRoot() {
-        // if (this.state.secondArg === DEFAULT_VALUES.DEFAULT_SECOND_NUMBER) {
-        //     this.updateState({
-        //         secondArg: BUTTONS_CONTENT.ZERO,
-        //     });
-        // } // !!?
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
 
         //для использования коппл. операции сразу после базовой операции
         if (this.state.isOperationPressed) {
@@ -1029,7 +1185,7 @@ class Calculator extends React.Component {
                     isNeededCleanResult: true,
                 });
 
-                return
+                return;
             }
 
             this.setState({
@@ -1069,7 +1225,7 @@ class Calculator extends React.Component {
                 isNeededCleanResult: true,
             });
 
-            return
+            return;
         }
 
         this.setState({
@@ -1082,11 +1238,26 @@ class Calculator extends React.Component {
     }
 
     onClickNegate() {
-        // if (this.state.secondArg === DEFAULT_VALUES.DEFAULT_SECOND_NUMBER) {
-        //     this.updateState({
-        //         secondArg: BUTTONS_CONTENT.ZERO,
-        //     });
-        // } // !!?
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
 
         //для использования коппл. операции сразу после базовой операции
         if (this.state.isOperationPressed) {
@@ -1171,19 +1342,37 @@ class Calculator extends React.Component {
     }
 
     onClickEqual() {
+        if (this.state.isDividedByZero){
+            this.setState({
+                firstArg: DEFAULT_VALUES.DEFAULT_FIRST_NUMBER,
+                secondArg: DEFAULT_VALUES.DEFAULT_SECOND_NUMBER,
+                result: DEFAULT_VALUES.DEFAULT_RESULT,
+                currentOperation: DEFAULT_VALUES.DEFAULT_OPERATION,
+                isOperationPressed: false,
+                isComplexOperationPressed: false,
+                isEqualPressed: false,
+                isNeedShowResult: false,
+                isNeededCleanResult: false,
+                isSeveralOperationsUsed: false,
+                isDividedByZero: false,
+                historyFirstArg: null,
+                historySecondArg: null,
+                historyCurrentOperation: null,
+            });
+
+            return;
+        }
+
         if (this.state.firstArg === DEFAULT_VALUES.DEFAULT_FIRST_NUMBER) {
             this.setState({
                 historyFirstArg: null,
                 historySecondArg: this.state.result,
                 historyCurrentOperation: null,
-                result: `${Number(this.state.secondArg)}`,
                 isOperationPressed: true,
                 isNeedShowResult: true,
                 isEqualPressed: true,
+                result: `${Number(this.state.secondArg)}`,
             });
-            //this.history.updateState({result: this.state.result})
-            //this.history.pushInHistoryList();
-            //this.consoleInfo("equal");
 
             return;
         }
@@ -1191,17 +1380,17 @@ class Calculator extends React.Component {
         //если уже был использован знак =
         if (this.state.isEqualPressed) {
             //если не было введенного значения после выбора знака
-            if (this.state.secondArg === BUTTONS_CONTENT.ZERO) { //!!?
+            if (this.state.secondArg === BUTTONS_CONTENT.ZERO) {
                 this.setState({
                     secondArg: this.state.firstArg,
                     historyFirstArg: null,
                     historySecondArg: this.state.result,
                     historyCurrentOperation: null,
-                    result: this.execBasicOperation(this.state.result),
                     isOperationPressed: true,
                     isNeededCleanResult: true,
                     isNeedShowResult: true,
                     isEqualPressed: true,
+                    result: this.execBasicOperation(this.state.result),
                 });
 
                 return;
@@ -1212,44 +1401,42 @@ class Calculator extends React.Component {
                 historyFirstArg: null,
                 historySecondArg: this.state.result,
                 historyCurrentOperation: null,
-                result: this.execBasicOperation(this.state.result),
                 isOperationPressed: true,
                 isNeededCleanResult: true,
                 isNeedShowResult: true,
                 isEqualPressed: true,
+                result: this.execBasicOperation(this.state.result),
             });
 
             return;
         }
 
         //если не было введенного значения после выбора знака
-        if (this.state.secondArg === BUTTONS_CONTENT.ZERO) { //!!?
+        if (this.state.secondArg === BUTTONS_CONTENT.ZERO) {
             this.setState({
                 secondArg: this.state.firstArg,
                 historyFirstArg: null,
                 historySecondArg: this.state.result,
                 historyCurrentOperation: null,
-                result: this.execBasicOperation(this.state.result),
                 isOperationPressed: true,
                 isNeededCleanResult: true,
                 isNeedShowResult: true,
                 isEqualPressed: true,
+                result: this.execBasicOperation(this.state.result),
             });
 
             return;
         }
 
-        //this.history.updateState({result: this.state.result})
-        //this.history.pushInHistoryList();
         this.setState({
             historyFirstArg: null,
             historySecondArg: null,
             historyCurrentOperation: null,
-            result: this.execBasicOperation(this.state.result),
             isOperationPressed: true,
             isNeededCleanResult: true,
             isNeedShowResult: true,
             isEqualPressed: true,
+            result: this.execBasicOperation(this.state.result),
         });
     }
 
@@ -1311,10 +1498,9 @@ class Calculator extends React.Component {
             bottomEdge: this.state.documentHeight - this.$calculator.current.offsetHeight,
             shiftX: event.clientX - this.$calculator.current.getBoundingClientRect().left,
             shiftY: event.clientY - this.$calculator.current.getBoundingClientRect().top,
-        })
+        });
 
         document.addEventListener('mousemove', this.dragAndDropOnMouseMove);
-
 
         target.addEventListener("mouseup", () => {
             document.removeEventListener('mousemove', this.dragAndDropOnMouseMove);
@@ -1380,11 +1566,9 @@ class Calculator extends React.Component {
             >
                 <History
                     historyData={this.setHistoryData()}
-                    firstArg={this.state.historyFirstArg}
-                    secondArg={this.state.historySecondArg}
-                    currentOperation={this.state.historyCurrentOperation}
                 />
                 <Display
+                    ref={this.$display}
                     secondArg={this.state.secondArg}
                     result={this.state.result}
                     isNeedShowResult={this.state.isNeedShowResult ? 1 : 0}
