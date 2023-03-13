@@ -1,6 +1,6 @@
 .myHstMoveBtn {
     cursor: pointer;
-    visibility: hidden;
+    visibility: visible;
     border: 0;
     height: 17px;
     width: 17px;

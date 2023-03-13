@@ -22,9 +22,25 @@ class Calculator extends React.Component {
             historyFirstArg: null,
             historySecondArg: null,
             historyCurrentOperation: null,
-
-            //новый флаг для последовательных операций(не складывает сроки для историиы)
+            rightEdge: null,
+            bottomEdge: null,
+            finalPositionX: null,
+            finalPositionY: null,
+            documentHeight: Math.max(
+                document.body.scrollHeight, document.documentElement.scrollHeight,
+                document.body.offsetHeight, document.documentElement.offsetHeight,
+                document.body.clientHeight, document.documentElement.clientHeight
+            ),
+            documentWidth: Math.max(
+                document.body.scrollWidth, document.documentElement.scrollWidth,
+                document.body.offsetWidth, document.documentElement.offsetWidth,
+                document.body.clientWidth, document.documentElement.clientWidth
+            ),
         }
+
+
+        this.$calculator = React.createRef();
+        this.setCalculatorPosition();
 
         this.onClickNumber = this.onClickNumber.bind(this);
         this.onClickBasicOperation = this.onClickBasicOperation.bind(this);
@@ -38,9 +54,12 @@ class Calculator extends React.Component {
         this.onClickSquare = this.onClickSquare.bind(this);
         this.onClickSquareRoot = this.onClickSquareRoot.bind(this);
         this.onClickEqual = this.onClickEqual.bind(this);
+        this.dragAndDropOnMouseMove = this.dragAndDropOnMouseMove.bind(this);
+        this.dragAndDropOnMouseDown = this.dragAndDropOnMouseDown.bind(this);
     }
 
     setOperationsLogic(type, text) {
+        //scrolleft в вомент нажатия изменнять на +1e9
         switch (type) {
             case ELEMENTS_PROPERTY.OPERATION_TYPE_NUMBER: {
                 return this.numberOperations(text);
@@ -205,8 +224,6 @@ class Calculator extends React.Component {
                     isNeedShowResult: false,
                 })
 
-                console.log(1,this.state.isSeveralOperationsUsed)
-
                 return;
             }
 
@@ -224,7 +241,6 @@ class Calculator extends React.Component {
                 });
                 // this.history.additionFirstArg();
                 // this.consoleInfo(`setNumber`);
-                console.log(2,this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -233,7 +249,6 @@ class Calculator extends React.Component {
                 isNeedShowResult: false,
             });
             // this.consoleInfo(`setNumber`);
-            console.log(3,this.state.isSeveralOperationsUsed)
             return;
         }
 
@@ -251,7 +266,6 @@ class Calculator extends React.Component {
                     isNeedShowResult: false,
                     isSeveralOperationsUsed: false,
                 });
-                console.log(4,this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -300,7 +314,6 @@ class Calculator extends React.Component {
             });
             // this.history.additionFirstArg();
             // this.consoleInfo(`setNumber`);
-            console.log(5, this.state.isSeveralOperationsUsed)
             return;
         }
 
@@ -315,7 +328,6 @@ class Calculator extends React.Component {
                 isEqualPressed: false,
                 isNeedShowResult: false,
             })
-            console.log(6,this.state.isSeveralOperationsUsed)
             return;
         }
 
@@ -326,7 +338,6 @@ class Calculator extends React.Component {
             isEqualPressed: false,
             isNeedShowResult: false,
         });
-        console.log(7,this.state.isSeveralOperationsUsed)
         // this.consoleInfo(`setNumber`);
     }
 
@@ -362,7 +373,6 @@ class Calculator extends React.Component {
                             isSeveralOperationsUsed: true,
                         })
 
-                        console.log(11, this.state.isSeveralOperationsUsed)
 
                         return;
                     }
@@ -381,7 +391,6 @@ class Calculator extends React.Component {
                             isEqualPressed: false,
                             isSeveralOperationsUsed: true,
                         })
-                        console.log(22, this.state.isSeveralOperationsUsed)
                         return;
                     }
 
@@ -397,7 +406,6 @@ class Calculator extends React.Component {
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
                     });
-                    console.log(33, this.state.isSeveralOperationsUsed)
                     return;
                 }
 
@@ -415,7 +423,6 @@ class Calculator extends React.Component {
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
                     })
-                    console.log(44, this.state.isSeveralOperationsUsed)
                     return;
                 }
                 if (!this.state.isComplexOperationPressed) {
@@ -433,7 +440,6 @@ class Calculator extends React.Component {
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
                     })
-                    console.log(55, this.state.isSeveralOperationsUsed)
                     return;
                 }
 
@@ -447,7 +453,6 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
                 })
-                console.log(66, this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -465,7 +470,6 @@ class Calculator extends React.Component {
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
                     })
-                    console.log(77, this.state.isSeveralOperationsUsed)
                     return;
                 }
                 if (!this.state.isComplexOperationPressed) {
@@ -482,7 +486,6 @@ class Calculator extends React.Component {
                         isEqualPressed: false,
                         isSeveralOperationsUsed: true,
                     })
-                    console.log(88, this.state.isSeveralOperationsUsed)
                     return;
                 }
 
@@ -497,7 +500,6 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
                 });
-                console.log(99, this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -514,7 +516,6 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
                 })
-                console.log(110, this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -531,7 +532,6 @@ class Calculator extends React.Component {
                     isEqualPressed: false,
                     isSeveralOperationsUsed: true,
                 })
-                console.log(220, this.state.isSeveralOperationsUsed)
                 return;
             }
 
@@ -546,7 +546,6 @@ class Calculator extends React.Component {
                 isSeveralOperationsUsed: true,
             });
             //this.consoleInfo(`equal`);
-            console.log(330, this.state.isSeveralOperationsUsed)
             return;
         }
 
@@ -925,7 +924,6 @@ class Calculator extends React.Component {
                     isNeedShowResult: false,
                     isEqualPressed: false,
                 });
-                console.log("add1")
                 return;
             }
 
@@ -939,7 +937,6 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: true,
                     isNeededCleanResult: true,
                 });
-                console.log("add2")
                 return;
             }
 
@@ -953,7 +950,6 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: true,
                 isNeededCleanResult: true,
             });
-            console.log("add3")
             return;
         }
 
@@ -968,7 +964,6 @@ class Calculator extends React.Component {
                 isNeedShowResult: false,
                 isEqualPressed: false,
             });
-            console.log("add4")
             return;
         }
 
@@ -982,7 +977,6 @@ class Calculator extends React.Component {
                     isComplexOperationPressed: true,
                     isNeededCleanResult: true,
                 });
-                console.log("add5.1")
                 return;
             }
 
@@ -993,7 +987,6 @@ class Calculator extends React.Component {
                 isComplexOperationPressed: true,
                 isNeededCleanResult: true,
             });
-            console.log("add5")
             return;
         }
 
@@ -1005,7 +998,6 @@ class Calculator extends React.Component {
             isComplexOperationPressed: true,
             isNeededCleanResult: true,
         });
-        console.log("add6")
     }
 
     onClickSquareRoot() {
@@ -1269,18 +1261,102 @@ class Calculator extends React.Component {
         });
     }
 
+    dragAndDropOnMouseMove(event) {
+        const target = event.target;
+
+        let finalPositionX = event.pageX - this.state.shiftX;
+        let finalPositionY = event.pageY - this.state.shiftY;
+
+        if (finalPositionX < DEFAULT_VALUES.ZERO || finalPositionX > this.state.rightEdge) {
+            if (finalPositionY < DEFAULT_VALUES.ZERO || finalPositionY > this.state.bottomEdge) {
+                return;
+            }
+
+            this.$calculator.current.style.top = finalPositionY + 'px';
+
+            return
+        }
+
+        if (finalPositionY < DEFAULT_VALUES.ZERO || finalPositionY > this.state.bottomEdge) {
+            if (finalPositionX < DEFAULT_VALUES.ZERO || finalPositionX > this.state.rightEdge) {
+                return
+            }
+
+            this.$calculator.current.style.left = finalPositionX + 'px';
+
+            return;
+        }
+
+        this.$calculator.current.style.left = finalPositionX + 'px';
+        this.$calculator.current.style.top = finalPositionY + 'px';
+    }
+
+    dragAndDropOnMouseDown(event) {
+        const target = event.target;
+
+        this.setState({
+            documentHeight: Math.max(
+                document.body.scrollHeight, document.documentElement.scrollHeight,
+                document.body.offsetHeight, document.documentElement.offsetHeight,
+                document.body.clientHeight, document.documentElement.clientHeight
+            ),
+            documentWidth: Math.max(
+                document.body.scrollWidth, document.documentElement.scrollWidth,
+                document.body.offsetWidth, document.documentElement.offsetWidth,
+                document.body.clientWidth, document.documentElement.clientWidth
+            ),
+            rightEdge: this.state.documentWidth - this.$calculator.current.offsetWidth,
+            bottomEdge: this.state.documentHeight - this.$calculator.current.offsetHeight,
+            shiftX: event.clientX - this.$calculator.current.getBoundingClientRect().left,
+            shiftY: event.clientY - this.$calculator.current.getBoundingClientRect().top,
+        })
+
+        document.addEventListener('mousemove', this.dragAndDropOnMouseMove);
+
+        target.addEventListener("mouseup", () => {
+            localStorage.setItem("positionX", `${event.pageX - this.state.shiftX}`);
+            localStorage.setItem("positionY", `${event.pageY - this.state.shiftY}}`);
+
+            document.removeEventListener('mousemove', this.dragAndDropOnMouseMove);
+        })
+    }
+
+    setCalculatorPosition() {
+        let position = {
+            positionX: DEFAULT_VALUES.DEFAULT_POSITION_X,
+            positionY: DEFAULT_VALUES.DEFAULT_POSITION_Y,
+        }
+
+        if (localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY) !== null) {
+            position.positionX = localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY);
+        }
+        if (localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY) !== null) {
+            position.positionY = localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY);
+        }
+        console.log(this.$calculator.current)
+        //this.$calculator.current.left = position.positionX + "px";
+        //this.$calculator.current.top = position.positionY + "px";
+
+    }
+
     render() {
         return (
-            <div className={classes.calc}>
+            <div
+                className={classes.calc}
+                onDragStart={(event)=> event.preventDefault()}
+                onMouseDown={this.dragAndDropOnMouseDown}
+                ref={this.$calculator}
+            >
                 <History
-                    firstarg={this.state.historyFirstArg}
-                    secondarg={this.state.historySecondArg}
-                    currentoperation={this.state.historyCurrentOperation}
+                    firstArg={this.state.historyFirstArg}
+                    secondArg={this.state.historySecondArg}
+                    currentOperation={this.state.historyCurrentOperation}
+
                 />
                 <Display
-                    secondarg={this.state.secondArg}
+                    secondArg={this.state.secondArg}
                     result={this.state.result}
-                    isneedshowresult={this.state.isNeedShowResult ? 1 : 0}
+                    isNeedShowResult={this.state.isNeedShowResult ? 1 : 0}
                 />
                 {ELEMENTS.map((button, index) =>
                     <Button
