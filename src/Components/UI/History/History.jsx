@@ -7,8 +7,9 @@ class History extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            showLeftMoveButton: true,
-            showRightMoveButton: true,
+            showLeftMoveButton: false,
+            showRightMoveButton: false,
+            historyData: null,
         }
 
         this.props = props;
@@ -68,33 +69,31 @@ class History extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.historyData !== prevProps.historyData) {
+            console.log("componentDidUpdate", prevProps, this.props);
 
+            if (this.$historyRef.current.scrollWidth > this.$historyRef.current.clientWidth) {
+                this.$historyRef.current.scrollLeft += 1e9;
 
-    getCorrectResult(arg1 , arg2, arg3) {
-        let result = "";
+                this.setState({
+                    showLeftMoveButton: true
+                });
 
-        if (arg1 !== null) {
-            result = `${arg1}`;
+                return;
+            }
+
+            this.setState({
+                showLeftMoveButton: false,
+                showRightMoveButton: false,
+            });
         }
-
-        if (arg2 !== null) {
-            result = `${result} ${arg2}`;
-        }
-
-        if (arg3 !== null) {
-            result = `${result} ${arg3}`;
-        }
-
-        return result;
     }
 
     render() {
         const {
-            firstArg,
-            secondArg,
-            currentOperation,
+            historyData,
         } = this.props
-        this.finalResult = this.getCorrectResult(firstArg, secondArg, currentOperation);
 
         return (
             <div
@@ -115,7 +114,7 @@ class History extends React.Component {
                     className={classes.myHstRst}
                     ref={this.$historyRef}
                 >
-                    {this.finalResult}
+                    {historyData}
                 </div>
                 {
                     this.state.showRightMoveButton ?

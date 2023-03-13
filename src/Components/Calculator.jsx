@@ -24,8 +24,6 @@ class Calculator extends React.Component {
             historyCurrentOperation: null,
             rightEdge: null,
             bottomEdge: null,
-            finalPositionX: null,
-            finalPositionY: null,
             documentHeight: Math.max(
                 document.body.scrollHeight, document.documentElement.scrollHeight,
                 document.body.offsetHeight, document.documentElement.offsetHeight,
@@ -36,11 +34,12 @@ class Calculator extends React.Component {
                 document.body.offsetWidth, document.documentElement.offsetWidth,
                 document.body.clientWidth, document.documentElement.clientWidth
             ),
+            localStoragePositionX: DEFAULT_VALUES.DEFAULT_POSITION_X,
+            localStoragePositionY: DEFAULT_VALUES.DEFAULT_POSITION_Y,
         }
 
 
         this.$calculator = React.createRef();
-        this.setCalculatorPosition();
 
         this.onClickNumber = this.onClickNumber.bind(this);
         this.onClickBasicOperation = this.onClickBasicOperation.bind(this);
@@ -59,7 +58,6 @@ class Calculator extends React.Component {
     }
 
     setOperationsLogic(type, text) {
-        //scrolleft в вомент нажатия изменнять на +1e9
         switch (type) {
             case ELEMENTS_PROPERTY.OPERATION_TYPE_NUMBER: {
                 return this.numberOperations(text);
@@ -76,12 +74,6 @@ class Calculator extends React.Component {
             case ELEMENTS_PROPERTY.OPERATION_TYPE_EQUAL: {
                 return this.equalOperation(text);
             }
-            // case ELEMENTS_PROPERTY.DISPLAY_TYPE_MOVE_BUTTON: {
-            //     return this.moveOperation(text);
-            // }
-            // default: {
-            //     console.warn(`Element ${type} has no initialized logic \n\tat setOperationsLogic() \n\tat Calculator.jsx`);
-            // }
         }
     }
 
@@ -1273,6 +1265,9 @@ class Calculator extends React.Component {
             }
 
             this.$calculator.current.style.top = finalPositionY + 'px';
+            this.setState({
+                localStoragePositionY: finalPositionY,
+            })
 
             return
         }
@@ -1283,12 +1278,19 @@ class Calculator extends React.Component {
             }
 
             this.$calculator.current.style.left = finalPositionX + 'px';
+            this.setState({
+                localStoragePositionX: finalPositionX,
+            })
 
             return;
         }
 
         this.$calculator.current.style.left = finalPositionX + 'px';
         this.$calculator.current.style.top = finalPositionY + 'px';
+        this.setState({
+            localStoragePositionX: finalPositionX,
+            localStoragePositionY: finalPositionY,
+        })
     }
 
     dragAndDropOnMouseDown(event) {
@@ -1313,30 +1315,59 @@ class Calculator extends React.Component {
 
         document.addEventListener('mousemove', this.dragAndDropOnMouseMove);
 
-        target.addEventListener("mouseup", () => {
-            localStorage.setItem("positionX", `${event.pageX - this.state.shiftX}`);
-            localStorage.setItem("positionY", `${event.pageY - this.state.shiftY}}`);
 
+        target.addEventListener("mouseup", () => {
             document.removeEventListener('mousemove', this.dragAndDropOnMouseMove);
         })
     }
 
-    setCalculatorPosition() {
-        let position = {
+    componentDidMount() {
+        const localStoragePosition ={
+            positionX: localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY),
+            positionY: localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY),
+        }
+
+        const position = {
             positionX: DEFAULT_VALUES.DEFAULT_POSITION_X,
             positionY: DEFAULT_VALUES.DEFAULT_POSITION_Y,
         }
 
-        if (localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY) !== null) {
-            position.positionX = localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY);
+        if (localStoragePosition.positionX !== null) {
+            position.positionX = localStoragePosition.positionX;
         }
-        if (localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY) !== null) {
-            position.positionY = localStorage.getItem(DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY);
+        if (localStoragePosition.positionY !== null) {
+            position.positionY = localStoragePosition.positionY;
         }
-        console.log(this.$calculator.current)
-        //this.$calculator.current.left = position.positionX + "px";
-        //this.$calculator.current.top = position.positionY + "px";
 
+        this.$calculator.current.style.left = position.positionX + 'px';
+        this.$calculator.current.style.top =  position.positionY + 'px';
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.state.localStoragePositionX !== prevProps.localStoragePositionX) {
+            localStorage.setItem(`${DEFAULT_VALUES.LOCAL_STORAGE_POSITION_X_KEY}`, `${this.state.localStoragePositionX}`);
+        }
+        if (this.state.localStoragePositionY !== prevProps.localStoragePositionY) {
+            localStorage.setItem(`${DEFAULT_VALUES.LOCAL_STORAGE_POSITION_Y_KEY}`, `${this.state.localStoragePositionY}`);
+        }
+    }
+
+    setHistoryData() {
+        let result = "";
+
+        if (this.state.historyFirstArg !== null) {
+            result = `${this.state.historyFirstArg}`;
+        }
+
+        if (this.state.historySecondArg !== null) {
+            result = `${result} ${this.state.historySecondArg}`;
+        }
+
+        if (this.state.historyCurrentOperation !== null) {
+            result = `${result} ${this.state.historyCurrentOperation}`;
+        }
+
+        return result;
     }
 
     render() {
@@ -1348,10 +1379,10 @@ class Calculator extends React.Component {
                 ref={this.$calculator}
             >
                 <History
+                    historyData={this.setHistoryData()}
                     firstArg={this.state.historyFirstArg}
                     secondArg={this.state.historySecondArg}
                     currentOperation={this.state.historyCurrentOperation}
-
                 />
                 <Display
                     secondArg={this.state.secondArg}
